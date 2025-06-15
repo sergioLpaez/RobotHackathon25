@@ -1,0 +1,19 @@
+from scservo_sdk import PortHandler, PacketHandler
+
+port = '/dev/ttyACM2'
+baudrate = 1000000
+
+port_handler = PortHandler(port)
+packet_handler = PacketHandler(2)  # Pass protocol version here
+
+if port_handler.openPort() and port_handler.setBaudRate(baudrate):
+    print(f"Connected to port {port} at {baudrate} bps")
+
+    for motor_id in range(1, 7):
+        dxl_model_number, result, error = packet_handler.ping(port_handler, motor_id)
+        if result == 0 and error == 0:
+            print(f"✅ Motor ID {motor_id} found (Model: {dxl_model_number})")
+        else:
+            print(f"❌ Motor ID {motor_id} not responding")
+else:
+    print(f"Failed to open port {port}")
